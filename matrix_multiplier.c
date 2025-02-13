@@ -1,13 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <pthread.h>
-#define DEFAULT_NTHREADS 128
-
-typedef struct Matrix{
-    int** mat; // matrix
-    int r; // num of row
-    int c; // num of column
-}Matrix;
+#include "matrix_multiplier.h"
 
 Matrix* New_Matrix(int r, int c){
     if(r <= 0 || c <= 0)
@@ -25,17 +16,6 @@ Matrix* New_Matrix(int r, int c){
     return m;
 }
 
-typedef struct Work{
-    int** m1;
-    int** m2;
-    int** prod;
-    int r; // m1->r = prod->r
-    int c; // m2->c = prod->c
-    int k; // m1->r = m2->c = k
-    int nthreads; // num of threads
-    int no; // serial number
-}Work;
-
 Work* New_Work_Array(int n, Matrix* m1, Matrix* m2, Matrix* prod){
     Work* new_works = (Work*) malloc(sizeof(Work) * n);
     if(new_works == NULL)  return NULL;
@@ -50,6 +30,17 @@ Work* New_Work_Array(int n, Matrix* m1, Matrix* m2, Matrix* prod){
         new_works[i].no = i;
     }
     return new_works;
+}
+
+Matrix* array_to_matrix(int* p, int r, int c){
+    Matrix* m = New_Matrix(r,c);
+    if(m == NULL)  return NULL;
+    for(int i=0;i<r;i++){
+        for(int j=0;j<c;j++){
+            m->mat[i][j] = p[i*c + j];
+        }
+    }
+    return m;
 }
 
 void* multiply(void* void_work){
@@ -89,33 +80,7 @@ Matrix* matrix_multiplier(Matrix* m1, Matrix* m2, int nthreads){
     return prod;
 }
 
-Matrix* array_to_matrix(int* p, int r, int c){
-    Matrix* m = New_Matrix(r,c);
-    if(m == NULL)  return NULL;
-    for(int i=0;i<r;i++){
-        for(int j=0;j<c;j++){
-            m->mat[i][j] = p[i*c + j];
-        }
-    }
-    return m;
-}
 
-int main(){
-    int a[6] = {1,2,3,4,5,6};
-    int b[6] = {1,2,3,4,5,6};
-    Matrix* m1 = array_to_matrix(a,3,2);
-    Matrix* m2 = array_to_matrix(b,2,3);
-    Matrix* result = matrix_multiplier(m1,m2, 0);
-    if(result == 1){
-        printf("input error\n");
-        return 0;
-    }
-    for(int i=0;i<result->r;i++){
-        for(int j=0;j<result->c;j++){
-            printf("%d ",result->mat[i][j]);
-        }
-        printf("\n");
-    }
-    return 0;
-}
+
+
 
