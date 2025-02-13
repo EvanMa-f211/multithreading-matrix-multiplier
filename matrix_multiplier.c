@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#define DEFAULT_NTHREADS 128
 
 typedef struct Matrix{
     int** mat; // matrix
@@ -12,9 +13,9 @@ Matrix* New_Matrix(int r, int c){
     if(r <= 0 || c <= 0)
         return (Matrix*)1;
     Matrix* m = (Matrix*) malloc(sizeof(Matrix));
+    if(m == NULL)  return NULL;
     m->r = r;
     m->c = c;
-    if(m == NULL)  return NULL;
     m->mat = (int**) malloc(sizeof(int*) * r);
     if(m->mat == NULL)  return NULL;
     for(int i=0;i<r;i++){
@@ -72,38 +73,43 @@ Matrix* matrix_multiplier(Matrix* m1, Matrix* m2, int nthreads){
     Matrix* prod = New_Matrix(m1->r, m2->c);
     if(prod == NULL)  return NULL;
 
-    if(nthreads == 0)
-        nthreads = m1->r * m2->c;
+    if(nthreads == 0) // nthreads = min(default, m1->r * m2->c)
+        nthreads = DEFAULT_NTHREADS < m1->r * m2->c ? DEFAULT_NTHREADS : m1->r * m2->c;
 
     Work* works = New_Work_Array(nthreads, m1, m2, prod);
     pthread_t threads[nthreads];
     for(int i=0;i<nthreads;i++){
         pthread_create(&threads[i], NULL, multiply, (void*)&works[i]);
     }
-    void** result;
+
     for(int i=0;i<nthreads;i++){
-        pthread_join(threads[i], result);
+        pthread_join(threads[i], NULL);
     }
     free(works);
     return prod;
 }
 
-void change(int* p, Matrix* m, int r, int c){
+Matrix* array_to_matrix(int* p, int r, int c){
+    Matrix* m = New_Matrix(r,c);
+    if(m == NULL)  return NULL;
     for(int i=0;i<r;i++){
         for(int j=0;j<c;j++){
             m->mat[i][j] = p[i*c + j];
         }
     }
+    return m;
 }
 
 int main(){
-    int a[2][3] = {{1,2,3},{4,5,6}};
-    int b[3][2] = {{6,5},{4,3},{2,1}};
-    Matrix* m1 = New_Matrix(2,3);
-    Matrix* m2 = New_Matrix(3,2);
-    change(&a[0][0],m1,2,3);
-    change(&b[0][0],m2,3,2);
+    int a[6] = {1,2,3,4,5,6};
+    int b[6] = {1,2,3,4,5,6};
+    Matrix* m1 = array_to_matrix(a,3,2);
+    Matrix* m2 = array_to_matrix(b,2,3);
     Matrix* result = matrix_multiplier(m1,m2, 0);
+    if(result == 1){
+        printf("input error\n");
+        return 0;
+    }
     for(int i=0;i<result->r;i++){
         for(int j=0;j<result->c;j++){
             printf("%d ",result->mat[i][j]);
