@@ -65,10 +65,15 @@ Matrix* matrix_multiplier(Matrix* m1, Matrix* m2, int nthreads){
     Matrix* prod = New_Matrix(m1->r, m2->c);
     if(prod == NULL)  return NULL;
 
-    if(nthreads == 0) // nthreads = min(default, m1->r * m2->c)
-        nthreads = DEFAULT_NTHREADS < m1->r * m2->c ? DEFAULT_NTHREADS : m1->r * m2->c;
+    if(nthreads == 0) // set to default
+        nthreads = DEFAULT_NTHREADS;
+
+    if(nthreads > m1->r * m2->c) // nthreads = min(nthreads, m1->r * m2->c)
+        nthreads = m1->r * m2->c;
 
     Work* works = New_Work_Array(nthreads, m1, m2, prod);
+    if(works == NULL)  return NULL;
+    
     pthread_t threads[nthreads];
     for(int i=0;i<nthreads;i++){
         pthread_create(&threads[i], NULL, multiply, (void*)&works[i]);
