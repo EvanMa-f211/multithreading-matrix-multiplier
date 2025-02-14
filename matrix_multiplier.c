@@ -58,6 +58,7 @@ void* multiply(void* void_work){
 }
 
 Matrix* matrix_multiplier(Matrix* m1, Matrix* m2, int nthreads){
+    if(m1 == NULL || m2 == NULL)  return (Matrix*)1;
     int n = m1->c;
     if(m1->c != m2->r || m1->r <= 0 || m1->c <=0 || m2->c <= 0)
         return (Matrix*)1;
