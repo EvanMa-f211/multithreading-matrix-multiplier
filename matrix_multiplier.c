@@ -33,6 +33,7 @@ Work* New_Work_Array(int n, Matrix* m1, Matrix* m2, Matrix* prod){
 }
 
 Matrix* array_to_matrix(int* p, int r, int c){
+    if(r <= 0 || c <= 0)  return (Matrix*)1;
     Matrix* m = New_Matrix(r,c);
     if(m == NULL)  return NULL;
     for(int i=0;i<r;i++){
@@ -74,12 +75,13 @@ Matrix* matrix_multiplier(Matrix* m1, Matrix* m2, int nthreads){
     Work* works = New_Work_Array(nthreads, m1, m2, prod);
     if(works == NULL)  return NULL;
     
-    pthread_t threads[nthreads];
-    for(int i=0;i<nthreads;i++){
+    pthread_t threads[nthreads-1];
+    for(int i=0;i<nthreads-1;i++){
         pthread_create(&threads[i], NULL, multiply, (void*)&works[i]);
     }
+    multiply((void*)&works[nthreads-1]); // main thread = no. nthreads-1
 
-    for(int i=0;i<nthreads;i++){
+    for(int i=0;i<nthreads-1;i++){
         pthread_join(threads[i], NULL);
     }
     free(works);
