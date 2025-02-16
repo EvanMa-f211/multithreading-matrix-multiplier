@@ -1,20 +1,36 @@
 #include "matrix_multiplier.h"
 
 int main(){
-    int a[6] = {1,2,3,4,5,6};
-    int b[6] = {1,2,3,4,5,6};
-    Matrix* m1 = array_to_matrix(a,3,2);
-    Matrix* m2 = array_to_matrix(b,2,3);
-    Matrix* result = matrix_multiplier(m1,m2, 0);
-    if(result == 1){
-        printf("input error\n");
-        return 0;
-    }
-    for(int i=0;i<result->r;i++){
-        for(int j=0;j<result->c;j++){
-            printf("%d ",result->mat[i][j]);
+    int r1, c1, r2, c2;
+
+    scanf("%d%d", &r1, &c1);
+    Matrix* m1 = New_Matrix(r1, c1);
+    for(int i=0; i<r1; i++){
+        for(int j=0; j<c1; j++){
+            scanf("%d", &m1->mat[i][j]);
         }
-        printf("\n");
     }
+
+    scanf("%d%d", &r2, &c2);
+    Matrix* m2 = New_Matrix(r2, c2);
+    for(int i=0; i<r2; i++){
+        for(int j=0; j<c2; j++){
+            scanf("%d", &m2->mat[i][j]);
+        }
+    }
+
+    Matrix* ans = matrix_multiplier(m1,m2,0);
+    if(ans == (Matrix*)1)
+        printf("The matrices cannot be multiplied.\n");
+    else{
+        printf("%d %d\n", ans->r, ans->c);
+        for(int i=0; i<ans->r; i++){
+            for(int j=0; j<ans->c; j++){
+                printf("%d ", ans->mat[i][j]);
+            }
+            printf("\n");
+        }
+    }
+
     return 0;
 }

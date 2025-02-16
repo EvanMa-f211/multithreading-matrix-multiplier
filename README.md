@@ -1,4 +1,4 @@
-# Parallel Matrix Multiplier
+# Multithreading Matrix Multiplier
 This repository provides C functions that perform matrix multiplication in parallel using threads.
 ## Details
 
@@ -31,5 +31,17 @@ This function multiplies matrix ```m1``` and ```m2``` using up to ```nthreads```
 * If ```nthreads``` is 0, it will be set to ```DEFAULT_NTHREADS```, which is defined in ```matrix_multiplier.h```.
 ## Usage
 Download ```matrix_multiplier.c``` and  ```matrix_multiplier.h```, then include the header file.
-
-
+## Example
+I wrote ```main.c``` and some example input files to demonstrate how to use them.
+### Description
+Input two matrices $A$ and $B$, then return $AB$.
+For each matrix:
+* The first line contains two integers representing the number of rows and columns. 
+* The following lines contain the elements of the matrix.
+### Compile and Run
+```
+$ gcc -c matrix_multiplier.c -o matrix_multiplier.o
+$ gcc -c main.c -o main.o
+$ gcc -o main main.o matrix_multiplier.o
+$ ./main
+```
