@@ -34,7 +34,7 @@ Download ```matrix_multiplier.c``` and  ```matrix_multiplier.h```, then include 
 ## Example
 I wrote ```main.c``` and some example input files to demonstrate how to use them.
 ### Description
-Input two matrices $A$ and $B$, then return $AB$.
+Input two matrices $A$ and $B$, then return $AB$.  
 For each matrix:
 * The first line contains two integers representing the number of rows and columns. 
 * The following lines contain the elements of the matrix.
